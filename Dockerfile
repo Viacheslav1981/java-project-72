@@ -18,6 +18,6 @@ WORKDIR /app
 
 COPY /app .
 
-RUN /app/gradlew installDist
+RUN app/gradlew install
 
 CMD ./build/install/app/bin/app

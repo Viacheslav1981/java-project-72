@@ -4,8 +4,8 @@ ARG GRADLE_VERSION=8.2
 
 WORKDIR /app
 
-COPY . /app/.
+COPY ./ .
 
-RUN  app/gradle installDist
+RUN  ./gradlew installDist
 
 CMD ./build/install/app/bin/app

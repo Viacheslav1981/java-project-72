@@ -8,4 +8,4 @@ COPY /app .
 
 RUN gradle installDist
 
-CMD ./build/install/app/bin/app
+CMD app/build/install/app/bin/app

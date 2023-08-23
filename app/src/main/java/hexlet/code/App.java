@@ -1,19 +1,28 @@
 package hexlet.code;
 
+import hexlet.code.controllers.RootController;
+import hexlet.code.controllers.UrlController;
 import io.javalin.Javalin;
 import io.javalin.rendering.template.JavalinThymeleaf;
 import nz.net.ultraq.thymeleaf.layoutdialect.LayoutDialect;
 import org.thymeleaf.TemplateEngine;
-
-import org.thymeleaf.Thymeleaf;
 import org.thymeleaf.extras.java8time.dialect.Java8TimeDialect;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
+
+import static io.javalin.apibuilder.ApiBuilder.path;
+import static io.javalin.apibuilder.ApiBuilder.post;
+import static javax.swing.UIManager.get;
 
 public class App {
 
     public static void main(String[] args) {
         Javalin app = getApp();
-        app.start(8080);
+        app.start(getPort());
+    }
+
+    private static int getPort() {
+        String port = System.getenv().getOrDefault("PORT", "8000");
+        return Integer.valueOf(port);
     }
 
     private static TemplateEngine getTemplateEngine() {
@@ -32,10 +41,10 @@ public class App {
 
     public static Javalin getApp() {
 
-        Javalin app = Javalin.create(javalinConfig ->
-                javalinConfig.plugins.enableDevLogging());
-
-        JavalinThymeleaf.init(getTemplateEngine());
+        Javalin app = Javalin.create(config -> {
+            config.plugins.enableDevLogging();
+            JavalinThymeleaf.init(getTemplateEngine());
+        });
 
         addRoutes(app);
 
@@ -44,8 +53,20 @@ public class App {
     }
 
     private static void addRoutes(Javalin app) {
-        app.get("/", ctx -> ctx.result("Hello World"));
+
+        app.get("/", RootController.main);
+
+        app.routes(() -> {
+            path("urls", () -> {
+                //  get(ArticleController.listArticles);
+                post(UrlController.createUrl);
+                get(UrlController.listUrls);
+                // get("new", ArticleController.newArticle);
+                //   path("{id}", () -> {
+                //       get(ArticleController.showArticle);
+            });
+        });
+        // });
 
     }
-
 }

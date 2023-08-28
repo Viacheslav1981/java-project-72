@@ -1,7 +1,5 @@
 datasource:
   default: ${APP_ENV}
- # default: development
- # development
   development:
     username: sa
     password: sa
@@ -10,7 +8,8 @@ datasource:
     driver: org.postgresql.Driver
     username: ${JDBC_DATABASE_USERNAME}
     password: ${JDBC_DATABASE_PASSWORD}
-    url: ${JDBC_DATABASE_URL}
+   # url: ${JDBC_DATABASE_URL}
+    url: jdbc:postgresql://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}
 ebean:
   ddl:
     run: true

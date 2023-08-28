@@ -2,6 +2,7 @@ package hexlet.code;
 
 import io.ebean.annotation.Platform;
 import io.ebean.dbmigration.DbMigration;
+
 import java.io.IOException;
 
 
@@ -11,14 +12,11 @@ public class MigrationGenerator {
 
         DbMigration dbMigration = DbMigration.create();
 
-        dbMigration.setPlatform(Platform.POSTGRES);
-        dbMigration.setPlatform(Platform.H2);
+        // dbMigration.setPlatform(Platform.POSTGRES);
+        //  dbMigration.setPlatform(Platform.H2);
 
         dbMigration.addPlatform(Platform.POSTGRES, "postgres");
         dbMigration.addPlatform(Platform.H2, "h2");
-
-      //  dbMigration.addPlatform(Platform.H2, "h2");
-
 
         dbMigration.generateMigration();
     }

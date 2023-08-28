@@ -1,18 +1,18 @@
 datasource:
   default: ${APP_ENV}
+ # default: development
+ # development
   development:
     username: sa
     password: sa
     url: "jdbc:h2:./database"
   production:
+    driver: org.postgresql.Driver
     username: ${JDBC_DATABASE_USERNAME}
     password: ${JDBC_DATABASE_PASSWORD}
-    url: "jdbc:postgresql:./database"
-
+    url: ${JDBC_DATABASE_URL}
 ebean:
   ddl:
     run: true
     generate: true
-  #  seedSql: seed.sql
-  # migration:
-  #   run: true
+#    seedSql: seed.sql

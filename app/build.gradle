@@ -16,7 +16,6 @@ application {
 }
 
 dependencies {
-   // testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
     implementation 'io.javalin:javalin:5.6.1'
     implementation 'io.javalin:javalin-rendering:5.5.0'
@@ -28,6 +27,7 @@ dependencies {
 
     implementation 'com.h2database:h2:2.1.214'
     implementation 'org.postgresql:postgresql:42.5.4'
+    implementation 'io.ebean:ebean-platform-postgres:13.15.0'
 
     implementation 'org.thymeleaf:thymeleaf:3.1.1.RELEASE'
     implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.2.0'
@@ -44,9 +44,11 @@ dependencies {
     implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.5'
     implementation 'javax.activation:activation:1.1.1'
 
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.9.2'
+    testImplementation 'org.assertj:assertj-core:3.24.2'
     testImplementation 'io.ebean:ebean-test:13.15.0'
-
-
+    testImplementation 'com.squareup.okhttp3:mockwebserver:4.10.0'
 
     annotationProcessor 'io.ebean:querybean-generator:13.6.5'
 
@@ -62,6 +64,8 @@ task generateMigration(type: JavaExec) {
 compileJava {
     options.release = 20
 }
+
+
 
 test {
     useJUnitPlatform()

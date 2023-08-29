@@ -76,5 +76,28 @@ public class AppTest {
         assertThat(actualUrl.getName()).isEqualTo(name);
     }
 
+    @Test
+    public void testShowUrl() {
+        String name = "https://example.com";
+
+        HttpResponse responsePost = Unirest
+                .post(baseUrl + "/urls")
+                .field("url", name)
+                .asEmpty();
+
+        Url url = new QUrl()
+                .name.equalTo(name)
+                .findOne();
+
+        Integer id = Math.toIntExact(url.getId());
+
+        HttpResponse response = Unirest
+                .get(baseUrl + "/urls/" + id)
+                .asString();
+
+        assertThat(response.getStatus()).isEqualTo(200);
+        assertThat(response.getBody().toString()).contains("Сайт " + name);
+    }
+
 
 }

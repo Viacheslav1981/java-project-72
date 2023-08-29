@@ -1,7 +1,11 @@
 plugins {
     id 'java'
     id 'application'
+    id 'checkstyle'
+    id 'com.adarshr.test-logger' version '3.0.0'
+    id 'com.github.ben-manes.versions' version '0.39.0'
     id 'io.ebean' version '13.17.4'
+    id 'jacoco'
 }
 
 group 'hexlet.code'
@@ -39,16 +43,23 @@ dependencies {
     implementation 'io.ebean:ebean-querybean:12.15.1'
     implementation 'io.ebean:ebean-migration:13.7.0'
     implementation 'io.ebean:ebean-annotation:8.3'
+
     annotationProcessor 'io.ebean:querybean-generator:13.15.0'
 
     implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.5'
     implementation 'javax.activation:activation:1.1.1'
+
+    implementation 'org.jsoup:jsoup:1.14.3'
+    implementation 'com.konghq:unirest-java:3.13.0'
+
+    implementation 'org.jsoup:jsoup:1.11.3';
 
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
     testImplementation 'org.junit.jupiter:junit-jupiter-params:5.9.2'
     testImplementation 'org.assertj:assertj-core:3.24.2'
     testImplementation 'io.ebean:ebean-test:13.15.0'
     testImplementation 'com.squareup.okhttp3:mockwebserver:4.10.0'
+
 
     annotationProcessor 'io.ebean:querybean-generator:13.6.5'
 
@@ -66,7 +77,27 @@ compileJava {
 }
 
 
-
 test {
     useJUnitPlatform()
+}
+
+testlogger {
+    showStandardStreams true
+}
+
+jacocoTestReport {
+    reports {
+        xml.required = true
+    }
+}
+
+test {
+    finalizedBy jacocoTestReport
+}
+jacocoTestReport {
+    dependsOn test
+}
+
+checkstyle {
+    toolVersion '10.12.1'
 }

@@ -4,8 +4,6 @@ import hexlet.code.domain.Url;
 import hexlet.code.domain.query.QUrl;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -15,6 +13,7 @@ import kong.unirest.Unirest;
 import io.javalin.Javalin;
 import io.ebean.DB;
 import io.ebean.Database;
+
 public class AppTest {
 
     @Test

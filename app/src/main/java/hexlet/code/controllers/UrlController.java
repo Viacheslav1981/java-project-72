@@ -2,14 +2,20 @@ package hexlet.code.controllers;
 
 
 import hexlet.code.domain.Url;
+import hexlet.code.domain.UrlCheck;
 import hexlet.code.domain.query.QUrl;
 import io.ebean.PagedList;
 import io.javalin.http.Handler;
+import kong.unirest.HttpResponse;
+import kong.unirest.Unirest;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.MalformedURLException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -34,10 +40,6 @@ public final class UrlController {
 
         List<Url> urls = urlPagedList.getList();
 
-        for (Url url : urls) {
-            System.out.println(url);
-
-        }
 
         ctx.attribute("urls", urls);
         ctx.render("showUrlsList.html");
@@ -115,22 +117,57 @@ public final class UrlController {
             //  ctx.redirect("mainPage.html");
 
         }
-
-        // System.out.println(urlFull.getPort());
-
-        //  System.out.println(urlFull.getContent());
-        //  System.out.println(urlFull.toURI());
-
-
-        // url.save();
-
-        //  ctx.sessionAttribute("flash", "Страница успешно добавлена");
-        //  ctx.sessionAttribute("flash-type", "success");
-
-        //  ctx.redirect("/urls");
-        //  ctx.redirect("/urls");
-
     };
 
+    public static Handler makeCheck = ctx -> {
+        long id = ctx.pathParamAsClass("id", Long.class).getOrDefault(1L);
+
+        Url url = new QUrl()
+                .id.equalTo((int) id)
+                .findOne();
+
+        HttpResponse response = Unirest
+                .get(url.getName())
+                .asString();
+
+        Document document = Jsoup.parse(response.getBody().toString());
+
+        UrlCheck urlCheck = new UrlCheck();
+
+        int statusCode = response.getStatus();
+        String title = document.title();
+        String description = document
+                .getElementsByAttributeValue("name", "description")
+                .attr("content");
+        String h1 = document.select("h1").first().text();
+
+        try {
+            urlCheck.setStatusCode(statusCode);
+            urlCheck.setTitle(title);
+            urlCheck.setDescription(description);
+            urlCheck.setH1(h1);
+            urlCheck.setUrl(url);
+            urlCheck.save();
+
+            url.setId(id);
+
+            List<UrlCheck> urlChecks = new ArrayList<>();
+            urlChecks.addAll(url.getUrlChecks());
+           // urlChecks.add(urlCheck);
+            url.setUrlChecks(urlChecks);
+            url.save();
+            LOGGER.info("Страница проверена");
+            ctx.sessionAttribute("flash-type", "success");
+            ctx.sessionAttribute("flash", "Страница успешно проверена");
+        } catch (Exception exception) {
+            LOGGER.warn("Ошибка при добавлении данных в БД");
+        }
+
+       // ctx.sessionAttribute("flash-type", "success");
+      //  ctx.sessionAttribute("name", "test");
+       // ctx.attribute("urlChecks", url.getUrlChecks());
+
+        ctx.redirect("/urls/" + id);
+    };
 
 }

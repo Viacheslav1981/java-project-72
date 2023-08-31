@@ -44,6 +44,8 @@ public class App {
     }
 
     public static Javalin getApp() {
+        System.setProperty("APP_ENV", "development");
+
 
         Javalin app = Javalin.create(config -> {
             if (!isProd()) {
@@ -59,12 +61,14 @@ public class App {
 
     }
 
+    //cd java_projects/java-project-72/app
 
     public static void addRoutes(Javalin app) {
         app.get("/", UrlController.newUrl);
         app.get("/urls", UrlController.listUrls);
         app.post("/urls", UrlController.createUrl);
         app.get("/urls/{id}", UrlController.showUrl);
+        app.post("/urls/{id}/checks", UrlController.makeCheck);
     }
 
 }

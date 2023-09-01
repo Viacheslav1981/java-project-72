@@ -10,6 +10,7 @@ import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,10 +57,10 @@ public final class UrlController {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         String createdAt = simpleDateFormat.format(Date.from(url.getCreatedAt()));
 
-
         ctx.attribute("id", url.getId());
         ctx.attribute("name", url.getName());
         ctx.attribute("createdAt", createdAt);
+        ctx.attribute("urlChecks", url.getUrlChecks());
         ctx.render("showUrl.html");
 
     };
@@ -88,7 +89,7 @@ public final class UrlController {
             for (Url value : urlsList) {
                 if (value.getName().contains(nameUrl)) {
                     isUrlInList = true;
-                   // break;
+                    // break;
                 }
             }
 
@@ -114,8 +115,6 @@ public final class UrlController {
             ctx.sessionAttribute("flash-type", "danger");
             ctx.render("mainPage.html");
 
-            //  ctx.redirect("mainPage.html");
-
         }
     };
 
@@ -136,10 +135,15 @@ public final class UrlController {
 
         int statusCode = response.getStatus();
         String title = document.title();
-        String description = document
-                .getElementsByAttributeValue("name", "description")
-                .attr("content");
-        String h1 = document.select("h1").first().text();
+
+        Element h1Element = document.selectFirst("h1");
+        String h1 = h1Element == null
+                ? ""
+                : h1Element.text();
+        Element descriptionElement = document.selectFirst("meta[name=description]");
+        String description = descriptionElement == null
+                ? ""
+                : descriptionElement.attr("content");
 
         try {
             urlCheck.setStatusCode(statusCode);
@@ -153,7 +157,7 @@ public final class UrlController {
 
             List<UrlCheck> urlChecks = new ArrayList<>();
             urlChecks.addAll(url.getUrlChecks());
-           // urlChecks.add(urlCheck);
+            urlChecks.add(urlCheck);
             url.setUrlChecks(urlChecks);
             url.save();
             LOGGER.info("Страница проверена");
@@ -162,10 +166,6 @@ public final class UrlController {
         } catch (Exception exception) {
             LOGGER.warn("Ошибка при добавлении данных в БД");
         }
-
-       // ctx.sessionAttribute("flash-type", "success");
-      //  ctx.sessionAttribute("name", "test");
-       // ctx.attribute("urlChecks", url.getUrlChecks());
 
         ctx.redirect("/urls/" + id);
     };

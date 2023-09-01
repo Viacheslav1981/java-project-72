@@ -29,7 +29,7 @@ dependencies {
 
     annotationProcessor 'io.ebean:querybean-generator:13.6.5'
 
-    implementation 'com.h2database:h2:2.1.214'
+    implementation 'com.h2database:h2:2.2.220'
     implementation 'org.postgresql:postgresql:42.5.4'
     implementation 'io.ebean:ebean-platform-postgres:13.15.0'
 

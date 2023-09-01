@@ -2,17 +2,26 @@ package hexlet.code;
 
 import hexlet.code.domain.Url;
 import hexlet.code.domain.query.QUrl;
-import org.junit.jupiter.api.BeforeAll;
+import io.ebean.DB;
+import io.ebean.Database;
+import io.javalin.Javalin;
+import kong.unirest.HttpResponse;
+import kong.unirest.Unirest;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeAll;
+
+import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import kong.unirest.HttpResponse;
-import kong.unirest.Unirest;
-import io.javalin.Javalin;
-import io.ebean.DB;
-import io.ebean.Database;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
+
+import java.io.File;
+
+import org.jsoup.Jsoup;
+
 
 public class AppTest {
 
@@ -24,7 +33,6 @@ public class AppTest {
     private static Javalin app;
     private static String baseUrl;
     private static Database database;
-
 
     @BeforeAll
     public static void beforeAll() {
@@ -39,6 +47,7 @@ public class AppTest {
     public static void afterAll() {
         app.stop();
     }
+
 
     @Test
     void testWelcome() {
@@ -97,6 +106,52 @@ public class AppTest {
 
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response.getBody().toString()).contains("Сайт " + name);
+    }
+
+
+    @Test
+    public void testUrlCheck() throws IOException {
+        MockWebServer server = new MockWebServer();
+
+        File html = new File("src/test/resources/templates_test/urlCheckTest.html");
+        String body = Jsoup.parse(html, "UTF-8").toString();
+        server.enqueue(new MockResponse().setBody(body));
+
+        String serverUrl = server.url("").toString();
+
+        HttpResponse responsePost = Unirest
+                .post(baseUrl + "/urls")
+                .field("url", serverUrl)
+                .asEmpty();
+
+        assertThat(responsePost.getStatus()).isEqualTo(302);
+        assertThat(responsePost.getHeaders().getFirst("Location")).isEqualTo("/urls");
+
+        Url url = new QUrl()
+                .findOne();
+
+        assertThat(url).isNotNull();
+        assertThat(url.getId()).isEqualTo(1);
+        assertThat(url.getName()).isEqualTo(serverUrl.substring(0, serverUrl.length() - 1));
+
+        long id = url.getId();
+
+        HttpResponse response = Unirest
+                .post(baseUrl + "/urls/" + id + "/checks")
+                .asEmpty();
+
+        server.shutdown();
+
+        assertThat(response.getStatus()).isEqualTo(302);
+        assertThat(response.getHeaders().getFirst("Location")).isEqualTo("/urls/" + id);
+
+        HttpResponse urlPage = Unirest
+                .get(baseUrl + "/urls/" + id)
+                .asString();
+
+        assertThat(urlPage.getStatus()).isEqualTo(200);
+        assertThat(urlPage.getBody().toString()).contains("<td>200</td>");
+        assertThat(urlPage.getBody().toString()).contains("<td>Анализатор страниц</td>");
     }
 
 

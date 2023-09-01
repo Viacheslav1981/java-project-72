@@ -44,8 +44,7 @@ public class App {
     }
 
     public static Javalin getApp() {
-        System.setProperty("APP_ENV", "development");
-
+      //  System.setProperty("APP_ENV", "development");
 
         Javalin app = Javalin.create(config -> {
             if (!isProd()) {

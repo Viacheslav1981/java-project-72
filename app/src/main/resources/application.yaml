@@ -1,9 +1,9 @@
 datasource:
-  default: ${APP_ENV}
+  default: development
   development:
     username: sa
     password: sa
-    url: "jdbc:h2:./database"
+    url: "jdbc:h2: ./database"
   production:
     driver: org.postgresql.Driver
     username: ${JDBC_DATABASE_USERNAME}

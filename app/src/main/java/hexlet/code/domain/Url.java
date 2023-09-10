@@ -27,6 +27,7 @@ public final class Url extends Model {
         this.name = name;
     }
 
+
     public long getId() {
         return this.id;
     }

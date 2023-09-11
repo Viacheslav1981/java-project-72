@@ -42,6 +42,7 @@ public final class UrlController {
         List<Url> urls = urlPagedList.getList();
 
 
+
         ctx.attribute("urls", urls);
         ctx.render("showUrlsList.html");
 
@@ -98,7 +99,6 @@ public final class UrlController {
                 ctx.sessionAttribute("flash-type", "info");
                 ctx.redirect("/urls");
 
-                // ctx.render("mainPage.html");
 
             } else {
                 url.save();
@@ -135,6 +135,7 @@ public final class UrlController {
 
         int statusCode = response.getStatus();
         String title = document.title();
+
 
         Element h1Element = document.selectFirst("h1");
         String h1 = h1Element == null

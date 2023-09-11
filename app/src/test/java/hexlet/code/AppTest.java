@@ -2,8 +2,6 @@ package hexlet.code;
 
 import hexlet.code.domain.Url;
 import hexlet.code.domain.query.QUrl;
-import io.ebean.DB;
-import io.ebean.Database;
 import io.javalin.Javalin;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
@@ -32,7 +30,6 @@ public class AppTest {
 
     private static Javalin app;
     private static String baseUrl;
-    private static Database database;
 
     @BeforeAll
     public static void beforeAll() {
@@ -40,7 +37,6 @@ public class AppTest {
         app.start(0);
         int port = app.port();
         baseUrl = "http://localhost:" + port;
-        database = DB.getDefault();
     }
 
     @AfterAll
@@ -98,7 +94,7 @@ public class AppTest {
                 .name.equalTo(name)
                 .findOne();
 
-        Integer id = Math.toIntExact(url.getId());
+        int id = Math.toIntExact(url.getId());
 
         HttpResponse response = Unirest
                 .get(baseUrl + "/urls/" + id)

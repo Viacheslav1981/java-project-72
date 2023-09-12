@@ -90,7 +90,7 @@ public final class UrlController {
                     .findList();
 
             for (Url value : urlsList) {
-                if (value.getName().contains(nameUrl)) {
+                if (value.getName().equals(nameUrl)) {
                     isUrlInList = true;
                     // break;
                 }
@@ -127,28 +127,35 @@ public final class UrlController {
                 .id.equalTo((int) id)
                 .findOne();
 
-        HttpResponse response = Unirest
-                .get(url.getName())
-                .asString();
+        HttpResponse response = null;
+        try {
+            response = Unirest
+                    .get(url.getName())
+                    .asString();
 
-        Document document = Jsoup.parse(response.getBody().toString());
+        } catch (Exception e) {
+            ctx.sessionAttribute("flash", "Некорректный URL");
+            ctx.sessionAttribute("flash-type", "danger");
 
-        UrlCheck urlCheck = new UrlCheck();
-
-        int statusCode = response.getStatus();
-        String title = document.title();
-
-
-        Element h1Element = document.selectFirst("h1");
-        String h1 = h1Element == null
-                ? ""
-                : h1Element.text();
-        Element descriptionElement = document.selectFirst("meta[name=description]");
-        String description = descriptionElement == null
-                ? ""
-                : descriptionElement.attr("content");
+        }
 
         try {
+            Document document = Jsoup.parse(response.getBody().toString());
+
+            UrlCheck urlCheck = new UrlCheck();
+
+            int statusCode = response.getStatus();
+            String title = document.title();
+
+
+            Element h1Element = document.selectFirst("h1");
+            String h1 = h1Element == null
+                    ? ""
+                    : h1Element.text();
+            Element descriptionElement = document.selectFirst("meta[name=description]");
+            String description = descriptionElement == null
+                    ? ""
+                    : descriptionElement.attr("content");
             urlCheck.setStatusCode(statusCode);
             urlCheck.setTitle(title);
             urlCheck.setDescription(description);
@@ -161,8 +168,6 @@ public final class UrlController {
             List<UrlCheck> urlChecks = new ArrayList<>();
             urlChecks.addAll(url.getUrlChecks());
             urlChecks.add(urlCheck);
-
-            // urlChecks = (List<UrlCheck>) Collections.reverseOrder();
 
 
             url.setUrlChecks(urlChecks);

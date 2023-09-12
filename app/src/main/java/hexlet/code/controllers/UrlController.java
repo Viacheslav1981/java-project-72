@@ -16,9 +16,11 @@ import org.slf4j.LoggerFactory;
 
 import java.net.MalformedURLException;
 import java.text.SimpleDateFormat;
-import java.util.*;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 
 public final class UrlController {

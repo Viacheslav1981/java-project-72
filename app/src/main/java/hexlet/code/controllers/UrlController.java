@@ -16,9 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import java.net.MalformedURLException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import java.net.URL;
 
@@ -42,7 +40,6 @@ public final class UrlController {
         List<Url> urls = urlPagedList.getList();
 
 
-
         ctx.attribute("urls", urls);
         ctx.render("showUrlsList.html");
 
@@ -57,6 +54,9 @@ public final class UrlController {
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         String createdAt = simpleDateFormat.format(Date.from(url.getCreatedAt()));
+
+        List<UrlCheck> urlChecks = url.getUrlChecks();
+        urlChecks.sort((o2, o1) -> o1.getId().compareTo(o2.getId()));
 
         ctx.attribute("id", url.getId());
         ctx.attribute("name", url.getName());
@@ -159,7 +159,12 @@ public final class UrlController {
             List<UrlCheck> urlChecks = new ArrayList<>();
             urlChecks.addAll(url.getUrlChecks());
             urlChecks.add(urlCheck);
+
+            // urlChecks = (List<UrlCheck>) Collections.reverseOrder();
+
+
             url.setUrlChecks(urlChecks);
+
             url.save();
             LOGGER.info("Страница проверена");
             ctx.sessionAttribute("flash-type", "success");

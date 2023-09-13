@@ -30,18 +30,27 @@ public class AppTest {
 
     private static Javalin app;
     private static String baseUrl;
+    private static MockWebServer server;
 
     @BeforeAll
-    public static void beforeAll() {
+    public static void beforeAll() throws IOException {
         app = App.getApp();
         app.start(0);
         int port = app.port();
         baseUrl = "http://localhost:" + port;
+
+        server = new MockWebServer();
+
+        File html = new File("src/test/resources/templates_test/urlCheckTest.html");
+        String body = Jsoup.parse(html, "UTF-8").toString();
+        server.enqueue(new MockResponse().setBody(body));
+        server.start();
     }
 
     @AfterAll
-    public static void afterAll() {
+    public static void afterAll() throws IOException {
         app.stop();
+        server.shutdown();
     }
 
 
@@ -107,12 +116,12 @@ public class AppTest {
 
     @Test
     public void testUrlCheck() throws IOException {
-        MockWebServer server = new MockWebServer();
+       // MockWebServer server = new MockWebServer();
 
-        File html = new File("src/test/resources/templates_test/urlCheckTest.html");
-        String body = Jsoup.parse(html, "UTF-8").toString();
-        server.enqueue(new MockResponse().setBody(body));
-        server.start();
+    //    File html = new File("src/test/resources/templates_test/urlCheckTest.html");
+    //    String body = Jsoup.parse(html, "UTF-8").toString();
+    //    server.enqueue(new MockResponse().setBody(body));
+    //    server.start();
 
         String serverUrl = server.url("").toString();
 
@@ -137,7 +146,7 @@ public class AppTest {
                 .post(baseUrl + "/urls/" + id + "/checks")
                 .asEmpty();
 
-        server.shutdown();
+      //  server.shutdown();
 
         assertThat(response.getStatus()).isEqualTo(302);
         assertThat(response.getHeaders().getFirst("Location")).isEqualTo("/urls/" + id);

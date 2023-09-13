@@ -112,6 +112,7 @@ public class AppTest {
         File html = new File("src/test/resources/templates_test/urlCheckTest.html");
         String body = Jsoup.parse(html, "UTF-8").toString();
         server.enqueue(new MockResponse().setBody(body));
+        server.start();
 
         String serverUrl = server.url("").toString();
 

@@ -1,6 +1,9 @@
 package hexlet.code;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import hexlet.code.controllers.UrlController;
+import hexlet.code.repository.BaseRepository;
 import io.javalin.Javalin;
 import io.javalin.rendering.template.JavalinThymeleaf;
 import nz.net.ultraq.thymeleaf.layoutdialect.LayoutDialect;
@@ -8,10 +11,16 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.extras.java8time.dialect.Java8TimeDialect;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.sql.SQLException;
+import java.util.stream.Collectors;
+
 
 public class App {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException, IOException {
         Javalin app = getApp();
         app.start(getPort());
     }
@@ -43,7 +52,34 @@ public class App {
         return templateEngine;
     }
 
-    public static Javalin getApp() {
+    public static Javalin getApp() throws IOException, SQLException {
+
+        var hikariConfig = new HikariConfig();
+
+        hikariConfig.setJdbcUrl("jdbc:h2:mem:project;DB_CLOSE_DELAY=-1;");
+      //  hikariConfig.setJdbcUrl(getDatabaseUrl());
+        var dataSource = new HikariDataSource(hikariConfig);
+
+        var url = App.class.getClassLoader().getResource("schema.sql");
+
+        var file = new File(url.getFile());
+        var sql = Files.lines(file.toPath())
+                .collect(Collectors.joining("\n"));
+
+        //log.info(sql);
+
+        try (var connection = dataSource.getConnection();
+             var statement = connection.createStatement()) {
+            statement.execute(sql);
+        }
+        BaseRepository.dataSource = dataSource;
+
+       /*
+        var app = Javalin.create(config -> {
+            config.plugins.enableDevLogging();
+        });
+
+        */
 
         Javalin app = Javalin.create(config -> {
             if (!isProd()) {
@@ -59,14 +95,19 @@ public class App {
 
     }
 
+    private static String getDatabaseUrl() {
+        return System.getenv()
+                .getOrDefault("JDBC_DATABASE_URL", "jdbc:h2:mem:project");
+    }
+
     //cd java_projects/java-project-72/app
 
     public static void addRoutes(Javalin app) {
         app.get("/", UrlController.newUrl);
         app.get("/urls", UrlController.listUrls);
         app.post("/urls", UrlController.createUrl);
-        app.get("/urls/{id}", UrlController.showUrl);
-        app.post("/urls/{id}/checks", UrlController.makeCheck);
+       // app.get("/urls/{id}", UrlController.showUrl);
+      //  app.post("/urls/{id}/checks", UrlController.makeCheck);
     }
 
 }

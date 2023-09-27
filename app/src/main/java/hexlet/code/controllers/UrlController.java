@@ -1,12 +1,13 @@
 package hexlet.code.controllers;
 
 
-import hexlet.code.domain.Url;
-import hexlet.code.domain.UrlCheck;
-import hexlet.code.domain.query.QUrl;
-import io.ebean.PagedList;
+import hexlet.code.model.Url;
+import hexlet.code.model.UrlCheck;
+import hexlet.code.repository.UrlRepository;
 import io.javalin.http.Handler;
+import io.javalin.http.NotFoundResponse;
 import kong.unirest.HttpResponse;
+import kong.unirest.PagedList;
 import kong.unirest.Unirest;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -33,26 +34,20 @@ public final class UrlController {
         int rowsPerPage = 10;
         int offset = (page - 1) * rowsPerPage;
 
-        PagedList<Url> urlPagedList = new QUrl()
-                .setFirstRow(offset)
-                .setMaxRows(rowsPerPage)
-                .orderBy()
-                .findPagedList();
 
-        List<Url> urls = urlPagedList.getList();
-
+        List<Url> urls = UrlRepository.getUrls();
 
         ctx.attribute("urls", urls);
         ctx.render("showUrlsList.html");
 
     };
 
+    /*
     public static Handler showUrl = ctx -> {
         long id = ctx.pathParamAsClass("id", Long.class).getOrDefault(null);
 
-        Url url = new QUrl()
-                .id.equalTo((int) id)
-                .findOne();
+        Url url = UrlRepository.findById(id)
+                .orElseThrow(() -> new NotFoundResponse("Url not found"));
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         String createdAt = simpleDateFormat.format(Date.from(url.getCreatedAt()));
@@ -67,6 +62,9 @@ public final class UrlController {
         ctx.render("showUrl.html");
 
     };
+
+     */
+
     public static Handler newUrl = ctx -> {
         Url url = new Url();
         ctx.attribute("url", url);
@@ -82,12 +80,12 @@ public final class UrlController {
             String authority = urlFull.getAuthority();
 
             nameUrl = protocol + "://" + authority;
+
             Url url = new Url(nameUrl);
 
             boolean isUrlInList = false;
 
-            List<Url> urlsList = new QUrl()
-                    .findList();
+            List<Url> urlsList = UrlRepository.getUrls();
 
             for (Url value : urlsList) {
                 if (value.getName().equals(nameUrl)) {
@@ -103,7 +101,7 @@ public final class UrlController {
 
 
             } else {
-                url.save();
+                UrlRepository.save(url);
 
                 ctx.sessionAttribute("flash", "Страница успешно добавлена");
                 ctx.sessionAttribute("flash-type", "success");
@@ -120,6 +118,7 @@ public final class UrlController {
         }
     };
 
+    /*
     public static Handler makeCheck = ctx -> {
         long id = ctx.pathParamAsClass("id", Long.class).getOrDefault(1L);
 
@@ -182,5 +181,7 @@ public final class UrlController {
 
         ctx.redirect("/urls/" + id);
     };
+
+     */
 
 }

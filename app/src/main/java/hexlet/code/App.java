@@ -56,8 +56,8 @@ public class App {
 
         var hikariConfig = new HikariConfig();
 
-        hikariConfig.setJdbcUrl("jdbc:h2:mem:project;DB_CLOSE_DELAY=-1;");
-      //  hikariConfig.setJdbcUrl(getDatabaseUrl());
+      //  hikariConfig.setJdbcUrl("jdbc:h2:mem:project;DB_CLOSE_DELAY=-1;");
+        hikariConfig.setJdbcUrl(getDatabaseUrl());
         var dataSource = new HikariDataSource(hikariConfig);
 
         var url = App.class.getClassLoader().getResource("schema.sql");

@@ -34,9 +34,11 @@ public class App {
     }
 
     private static int getPort() {
-        String port = System.getenv().getOrDefault("PORT", "8000");
+        String port = System.getenv().getOrDefault("PORT", "8080");
         return Integer.valueOf(port);
     }
+
+    //export JDBC_DATABASE_URL=jdbc:postgresql://db:5432/postgres?password=aWp4u78ME7fVgqMo5kneBD5XgpcLhUJE&user=dbpostges_user
 
     private static TemplateEngine getTemplateEngine() {
         TemplateEngine templateEngine = new TemplateEngine();
@@ -56,7 +58,6 @@ public class App {
 
         var hikariConfig = new HikariConfig();
 
-      //  hikariConfig.setJdbcUrl("jdbc:h2:mem:project;DB_CLOSE_DELAY=-1;");
         hikariConfig.setJdbcUrl(getDatabaseUrl());
         var dataSource = new HikariDataSource(hikariConfig);
 
@@ -73,13 +74,6 @@ public class App {
             statement.execute(sql);
         }
         BaseRepository.dataSource = dataSource;
-
-       /*
-        var app = Javalin.create(config -> {
-            config.plugins.enableDevLogging();
-        });
-
-        */
 
         Javalin app = Javalin.create(config -> {
             if (!isProd()) {

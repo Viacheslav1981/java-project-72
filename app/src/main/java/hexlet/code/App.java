@@ -91,9 +91,16 @@ public class App {
 
     }
 
+    /*
     private static String getDatabaseUrl() {
         return System.getenv()
                 .getOrDefault("JDBC_DATABASE_URL", "jdbc:h2:mem:project");
+    }
+
+     */
+    private static String getDatabaseUrl() {
+        return System.getenv()
+                .get("JDBC_DATABASE_URL");
     }
 
     //cd java_projects/java-project-72/app

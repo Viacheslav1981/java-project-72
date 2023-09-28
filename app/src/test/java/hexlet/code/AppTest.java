@@ -43,6 +43,7 @@ public final class AppTest {
     private static String baseUrl;
     private static final String CORRECT_URL = "https://www.google.com";
     private static final String URL_FOR_NON_EXISTING_ENTITY_TEST = "https://www.dzen.ru";
+    private static final String WRONG_URL = "www.danger.su";
 
     private static Path getFixturePath(String fileName) {
         return Paths.get("src", "test", "resources", "fixtures", fileName)
@@ -186,4 +187,18 @@ public final class AppTest {
             assertThat(actualCheck.getDescription()).isEqualTo("statements of great people");
         });
     }
+
+    @Test
+    public void testCreateWrongUrl() {
+        HttpResponse<String> response = Unirest.post(baseUrl)
+                .field("url", WRONG_URL)
+                .asString();
+
+        int postQueryStatus = response.getStatus();
+        assertThat(postQueryStatus).isEqualTo(HttpServletResponse.SC_NOT_FOUND);
+
+        response = Unirest.get(baseUrl + "/urls").asString();
+        assertThat(response.getBody()).doesNotContain(WRONG_URL);
+    }
+
 }

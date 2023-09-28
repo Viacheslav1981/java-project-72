@@ -39,9 +39,6 @@ public class App {
     }
 
 
-    //export JDBC_DATABASE_URL=jdbc:postgresql://db:5432/postgres?password=aWp4u78ME7fVgqMo5kneBD5XgpcLhUJE&user=dbpostges_user
-
-
     private static TemplateEngine getTemplateEngine() {
         TemplateEngine templateEngine = new TemplateEngine();
 
@@ -91,19 +88,10 @@ public class App {
 
     }
 
-    /*
     private static String getDatabaseUrl() {
         return System.getenv()
                 .getOrDefault("JDBC_DATABASE_URL", "jdbc:h2:mem:project");
     }
-
-     */
-    private static String getDatabaseUrl() {
-        return System.getenv()
-                .get("JDBC_DATABASE_URL");
-    }
-
-    //cd java_projects/java-project-72/app
 
     public static void addRoutes(Javalin app) {
         app.get("/", UrlController.newUrl);

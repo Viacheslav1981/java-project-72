@@ -1,6 +1,5 @@
 package hexlet.code.controllers;
 
-
 import hexlet.code.model.Url;
 import hexlet.code.model.UrlCheck;
 import hexlet.code.repository.UrlCheckRepository;
@@ -8,7 +7,6 @@ import hexlet.code.repository.UrlRepository;
 import io.javalin.http.Handler;
 import io.javalin.http.NotFoundResponse;
 import kong.unirest.HttpResponse;
-import kong.unirest.PagedList;
 import kong.unirest.Unirest;
 import kong.unirest.UnirestException;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +22,6 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -52,8 +49,6 @@ public final class UrlController {
 
         ctx.attribute("urls", urls);
         ctx.attribute("urlChecks", urlChecks);
-      //  ctx.attribute("pages", pages);
-      //  ctx.attribute("currentPage", currentPage);
         ctx.render("showUrlsList.html");
 
     };
@@ -85,7 +80,7 @@ public final class UrlController {
     public static Handler newUrl = ctx -> {
         Url url = new Url();
         ctx.attribute("url", url);
-        ctx.render("mainPage.html");
+        ctx.render("index.html");
     };
 
     public static Handler createUrl = ctx -> {
@@ -107,7 +102,6 @@ public final class UrlController {
             for (Url value : urlsList) {
                 if (value.getName().equals(nameUrl)) {
                     isUrlInList = true;
-                    // break;
                 }
             }
 
@@ -130,7 +124,7 @@ public final class UrlController {
         } catch (MalformedURLException e) {
             ctx.sessionAttribute("flash", "Некорректный URL");
             ctx.sessionAttribute("flash-type", "danger");
-            ctx.render("mainPage.html");
+            ctx.render("index.html");
 
         }
     };
@@ -141,15 +135,7 @@ public final class UrlController {
 
         Url url = UrlRepository.findById(id).orElse(null);
 
-        HttpResponse response = null;
-        //try {
-
-
-        //} catch (Exception e) {
-          //  ctx.sessionAttribute("flash", "Некорректный URL");
-          //  ctx.sessionAttribute("flash-type", "danger");
-
-       // }
+        HttpResponse response;
 
         try {
             response = Unirest
@@ -158,11 +144,8 @@ public final class UrlController {
             int statusCode = response.getStatus();
 
 
-
             Document document = Jsoup.parse(response.getBody().toString());
             String title = document.title();
-
-          //  UrlCheck urlCheck = new UrlCheck();
 
 
             Element h1Element = document.selectFirst("h1");
@@ -179,33 +162,15 @@ public final class UrlController {
             UrlCheck urlCheck = new UrlCheck(statusCode, title, h1, description, url.getId());
             urlCheck.setCreatedAt(createdAt);
 
-
-           // urlCheck.setStatusCode(statusCode);
-          //  urlCheck.setTitle(title);
-         //   urlCheck.setDescription(description);
-         //   urlCheck.setH1(h1);
-         //   urlCheck.setUrl(url);
-          //  urlCheck.save();
-
             UrlCheckRepository.save(urlCheck);
 
-          //  url.setId(id);
-
-         //   List<UrlCheck> urlChecks = new ArrayList<>();
-          //  urlChecks.addAll(url.getUrlChecks());
-          //  urlChecks.add(urlCheck);
-
-
-          //  url.setUrlChecks(urlChecks);
-
-         //   url.save();
             LOGGER.info("Страница проверена");
             ctx.sessionAttribute("flash-type", "success");
             ctx.sessionAttribute("flash", "Страница успешно проверена");
 
         } catch (UnirestException e) {
-                ctx.sessionAttribute("flash", "Некорректный адрес");
-                ctx.sessionAttribute("flash-type", "danger");
+            ctx.sessionAttribute("flash", "Некорректный адрес");
+            ctx.sessionAttribute("flash-type", "danger");
 
         } catch (Exception exception) {
             LOGGER.warn("Ошибка при добавлении данных в БД");
@@ -213,7 +178,6 @@ public final class UrlController {
 
         ctx.redirect("/urls/" + id);
     };
-
 
 
 }

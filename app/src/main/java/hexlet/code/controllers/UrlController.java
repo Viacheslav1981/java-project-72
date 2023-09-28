@@ -3,6 +3,7 @@ package hexlet.code.controllers;
 
 import hexlet.code.model.Url;
 import hexlet.code.model.UrlCheck;
+import hexlet.code.repository.UrlCheckRepository;
 import hexlet.code.repository.UrlRepository;
 import io.javalin.http.Handler;
 import io.javalin.http.NotFoundResponse;
@@ -40,6 +41,37 @@ public final class UrlController {
         ctx.attribute("urls", urls);
         ctx.render("showUrlsList.html");
 
+    };
+    public static Handler showUrl = ctx -> {
+
+        Long id = ctx.pathParamAsClass("id", Long.class).getOrDefault(null);
+
+        Url url = UrlRepository.findById(id).orElse(null);
+
+        if (url == null) {
+            throw new NotFoundResponse("The ulr you are looking for is not found");
+        }
+
+      //  List<UrlCheck> checks = UrlCheckRepository.getAllChecks(url.getId());
+
+      //  ctx.attribute("url", url);
+     //   ctx.attribute("checks", checks);
+    //    ctx.render("showUrl.html");
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        String createdAt = simpleDateFormat.format(Date.from(url.getCreatedAtToInstant()));
+
+        List<UrlCheck> urlChecks = UrlCheckRepository.getAllChecks(url.getId());
+
+
+      //  List<UrlCheck> urlChecks = url.getUrlChecks();
+        urlChecks.sort((o2, o1) -> o1.getId().compareTo(o2.getId()));
+
+        ctx.attribute("id", url.getId());
+        ctx.attribute("name", url.getName());
+        ctx.attribute("createdAt", createdAt);
+        ctx.attribute("urlChecks", urlChecks);
+        ctx.render("showUrl.html");
     };
 
     /*

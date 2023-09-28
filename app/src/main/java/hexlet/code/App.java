@@ -38,7 +38,35 @@ public class App {
         return Integer.valueOf(port);
     }
 
+
     //export JDBC_DATABASE_URL=jdbc:postgresql://db:5432/postgres?password=aWp4u78ME7fVgqMo5kneBD5XgpcLhUJE&user=dbpostges_user
+
+    /*
+   APP_ENV=production
+JDBC_DATABASE_PASSWORD=J5y3LMsnhlx8GXVkxyFO
+JDBC_DATABASE_URL=jdbc:postgresql://${{ PGHOST }}:${{ PGPORT }}/${{ PGDATABASE }}
+JDBC_DATABASE_USERNAME=postgres
+PGDATABASE=railway
+PGHOST=containers-us-west-131.railway.app
+PGPORT=8032
+                                 host                  port    db
+            jdbc:postgresql://dpg-cjid3bb37aks73fsvpjg:5432/project4_3kqr
+
+# У строки в переменной следующий формат: {driver}:{provider}://{host}:{port}/{db}?password={password}&user={user}
+export JDBC_DATABASE_URL=jdbc:postgresql://dpg-cka1be6v3ddc739qtfa0-a:5432/postges?password=aWp4u78ME7fVgqMo5kneBD5XgpcLhUJE&user=dbpostges_user
+Hostname
+
+dpg-cka1be6v3ddc739qtfa0-a
+
+Port
+
+5432
+
+Database
+
+dbpostges
+
+     */
 
     private static TemplateEngine getTemplateEngine() {
         TemplateEngine templateEngine = new TemplateEngine();
@@ -100,7 +128,7 @@ public class App {
         app.get("/", UrlController.newUrl);
         app.get("/urls", UrlController.listUrls);
         app.post("/urls", UrlController.createUrl);
-       // app.get("/urls/{id}", UrlController.showUrl);
+        app.get("/urls/{id}", UrlController.showUrl);
       //  app.post("/urls/{id}/checks", UrlController.makeCheck);
     }
 

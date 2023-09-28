@@ -192,7 +192,7 @@ public final class AppTest {
     }
 
     @Test
-    public void testCreateWrongUrl() {
+    public void testNotFound() {
         HttpResponse<String> response = Unirest.post(baseUrl)
                 .field("url", WRONG_URL)
                 .asString();

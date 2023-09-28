@@ -186,5 +186,4 @@ public final class AppTest {
             assertThat(actualCheck.getDescription()).isEqualTo("statements of great people");
         });
     }
-
 }

@@ -1,6 +1,8 @@
 package hexlet.code.repository;
+
 import hexlet.code.model.UrlCheck;
 import lombok.extern.slf4j.Slf4j;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
@@ -21,9 +23,9 @@ public class UrlCheckRepository extends BaseRepository {
         log.info("UrlCheckRepository's method save() was started!");
 
         String query = """
-                        INSERT INTO url_checks (status_code, title, h1, description, created_at, url_id)
-                        VALUES (?, ?, ?, ?, ?, ?)
-                        """;
+                INSERT INTO url_checks (status_code, title, h1, description, created_at, url_id)
+                VALUES (?, ?, ?, ?, ?, ?)
+                """;
 
         Timestamp dayTime = new Timestamp(System.currentTimeMillis());
 

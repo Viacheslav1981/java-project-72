@@ -15,14 +15,12 @@ public final class Url {
     private String name;
     private Timestamp createdAt;
 
-
     public Url() {
     }
 
     public Url(String name) {
         this.name = name;
     }
-
 
     public long getId() {
         return this.id;
@@ -31,8 +29,6 @@ public final class Url {
     public String getName() {
         return this.name;
     }
-
-   
 
     public Instant getCreatedAtToInstant() {
         return this.createdAt.toInstant();

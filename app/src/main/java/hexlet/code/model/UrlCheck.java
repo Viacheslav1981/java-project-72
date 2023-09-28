@@ -3,6 +3,7 @@ package hexlet.code.model;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+
 import java.sql.Timestamp;
 import java.time.Instant;
 
@@ -10,7 +11,6 @@ import java.time.Instant;
 @Getter
 @Setter
 public final class UrlCheck {
-
     private Long id;
 
     private int statusCode;

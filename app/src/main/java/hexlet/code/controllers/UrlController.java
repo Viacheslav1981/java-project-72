@@ -10,6 +10,8 @@ import io.javalin.http.NotFoundResponse;
 import kong.unirest.HttpResponse;
 import kong.unirest.PagedList;
 import kong.unirest.Unirest;
+import kong.unirest.UnirestException;
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -17,14 +19,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.MalformedURLException;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
-
+@Slf4j
 public final class UrlController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UrlController.class);
@@ -38,7 +43,17 @@ public final class UrlController {
 
         List<Url> urls = UrlRepository.getUrls();
 
+        Map<Long, UrlCheck> urlChecks = null;
+        try {
+            urlChecks = UrlCheckRepository.findLatestChecks();
+        } catch (SQLException throwables) {
+            log.error(throwables.getMessage(), throwables);
+        }
+
         ctx.attribute("urls", urls);
+        ctx.attribute("urlChecks", urlChecks);
+      //  ctx.attribute("pages", pages);
+      //  ctx.attribute("currentPage", currentPage);
         ctx.render("showUrlsList.html");
 
     };
@@ -52,19 +67,11 @@ public final class UrlController {
             throw new NotFoundResponse("The ulr you are looking for is not found");
         }
 
-      //  List<UrlCheck> checks = UrlCheckRepository.getAllChecks(url.getId());
-
-      //  ctx.attribute("url", url);
-     //   ctx.attribute("checks", checks);
-    //    ctx.render("showUrl.html");
-
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         String createdAt = simpleDateFormat.format(Date.from(url.getCreatedAtToInstant()));
 
         List<UrlCheck> urlChecks = UrlCheckRepository.getAllChecks(url.getId());
 
-
-      //  List<UrlCheck> urlChecks = url.getUrlChecks();
         urlChecks.sort((o2, o1) -> o1.getId().compareTo(o2.getId()));
 
         ctx.attribute("id", url.getId());
@@ -74,28 +81,6 @@ public final class UrlController {
         ctx.render("showUrl.html");
     };
 
-    /*
-    public static Handler showUrl = ctx -> {
-        long id = ctx.pathParamAsClass("id", Long.class).getOrDefault(null);
-
-        Url url = UrlRepository.findById(id)
-                .orElseThrow(() -> new NotFoundResponse("Url not found"));
-
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-        String createdAt = simpleDateFormat.format(Date.from(url.getCreatedAt()));
-
-        List<UrlCheck> urlChecks = url.getUrlChecks();
-        urlChecks.sort((o2, o1) -> o1.getId().compareTo(o2.getId()));
-
-        ctx.attribute("id", url.getId());
-        ctx.attribute("name", url.getName());
-        ctx.attribute("createdAt", createdAt);
-        ctx.attribute("urlChecks", url.getUrlChecks());
-        ctx.render("showUrl.html");
-
-    };
-
-     */
 
     public static Handler newUrl = ctx -> {
         Url url = new Url();
@@ -150,33 +135,34 @@ public final class UrlController {
         }
     };
 
-    /*
+
     public static Handler makeCheck = ctx -> {
         long id = ctx.pathParamAsClass("id", Long.class).getOrDefault(1L);
 
-        Url url = new QUrl()
-                .id.equalTo((int) id)
-                .findOne();
+        Url url = UrlRepository.findById(id).orElse(null);
 
         HttpResponse response = null;
+        //try {
+
+
+        //} catch (Exception e) {
+          //  ctx.sessionAttribute("flash", "Некорректный URL");
+          //  ctx.sessionAttribute("flash-type", "danger");
+
+       // }
+
         try {
             response = Unirest
                     .get(url.getName())
                     .asString();
-
-        } catch (Exception e) {
-            ctx.sessionAttribute("flash", "Некорректный URL");
-            ctx.sessionAttribute("flash-type", "danger");
-
-        }
-
-        try {
-            Document document = Jsoup.parse(response.getBody().toString());
-
-            UrlCheck urlCheck = new UrlCheck();
-
             int statusCode = response.getStatus();
+
+
+
+            Document document = Jsoup.parse(response.getBody().toString());
             String title = document.title();
+
+          //  UrlCheck urlCheck = new UrlCheck();
 
 
             Element h1Element = document.selectFirst("h1");
@@ -187,26 +173,40 @@ public final class UrlController {
             String description = descriptionElement == null
                     ? ""
                     : descriptionElement.attr("content");
-            urlCheck.setStatusCode(statusCode);
-            urlCheck.setTitle(title);
-            urlCheck.setDescription(description);
-            urlCheck.setH1(h1);
-            urlCheck.setUrl(url);
-            urlCheck.save();
 
-            url.setId(id);
+            Timestamp createdAt = new Timestamp(System.currentTimeMillis());
 
-            List<UrlCheck> urlChecks = new ArrayList<>();
-            urlChecks.addAll(url.getUrlChecks());
-            urlChecks.add(urlCheck);
+            UrlCheck urlCheck = new UrlCheck(statusCode, title, h1, description, url.getId());
+            urlCheck.setCreatedAt(createdAt);
 
 
-            url.setUrlChecks(urlChecks);
+           // urlCheck.setStatusCode(statusCode);
+          //  urlCheck.setTitle(title);
+         //   urlCheck.setDescription(description);
+         //   urlCheck.setH1(h1);
+         //   urlCheck.setUrl(url);
+          //  urlCheck.save();
 
-            url.save();
+            UrlCheckRepository.save(urlCheck);
+
+          //  url.setId(id);
+
+         //   List<UrlCheck> urlChecks = new ArrayList<>();
+          //  urlChecks.addAll(url.getUrlChecks());
+          //  urlChecks.add(urlCheck);
+
+
+          //  url.setUrlChecks(urlChecks);
+
+         //   url.save();
             LOGGER.info("Страница проверена");
             ctx.sessionAttribute("flash-type", "success");
             ctx.sessionAttribute("flash", "Страница успешно проверена");
+
+        } catch (UnirestException e) {
+                ctx.sessionAttribute("flash", "Некорректный адрес");
+                ctx.sessionAttribute("flash-type", "danger");
+
         } catch (Exception exception) {
             LOGGER.warn("Ошибка при добавлении данных в БД");
         }
@@ -214,6 +214,6 @@ public final class UrlController {
         ctx.redirect("/urls/" + id);
     };
 
-     */
+
 
 }

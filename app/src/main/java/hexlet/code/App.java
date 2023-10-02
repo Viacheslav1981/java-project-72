@@ -90,11 +90,11 @@ public class App {
     }
 
     private static String getDatabaseUrl() {
-          return System.getenv()
-              .getOrDefault("JDBC_DATABASE_URL", "jdbc:h2:mem:project");
-      //  return System.getenv().
-            //    getOrDefault("JDBC_DATABASE_URL",
-            //            " jdbc:postgresql://${{PGUSER}}:${{PGPASSWORD}}@${{PGHOST}}:${{PGPORT}}/${{PGDATABASE}}");
+        return System.getenv()
+                .getOrDefault("JDBC_DATABASE_URL", "jdbc:h2:mem:project");
+        //  return System.getenv().
+        //    getOrDefault("JDBC_DATABASE_URL",
+        //            " jdbc:postgresql://${{PGUSER}}:${{PGPASSWORD}}@${{PGHOST}}:${{PGPORT}}/${{PGDATABASE}}");
     }
 
     public static void addRoutes(Javalin app) {

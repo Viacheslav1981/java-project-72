@@ -89,6 +89,7 @@ public final class AppTest {
         UrlRepository.save(firstUrl);
     }
 
+
     @Test
     public void testWelcome() {
         HttpResponse<String> response = Unirest.get(baseUrl).asString();
@@ -97,10 +98,8 @@ public final class AppTest {
     }
 
 
-
-
     @Test
-    public void testCreateUrl() {
+    public void testCreateUrl() throws SQLException {
         HttpResponse<String> response = Unirest.post(baseUrl + "/urls")
                 .field("url", CORRECT_URL)
                 .asString();
@@ -115,7 +114,12 @@ public final class AppTest {
 
         assertThat(getQueryStatus).isEqualTo(HttpServletResponse.SC_OK);
         assertThat(responseBody).contains(CORRECT_URL);
+
+        var actualUrl = UrlRepository.findByName(CORRECT_URL);
+        assertThat(actualUrl).isNotNull();
+
     }
+
 
     @Test
     public void testShowUrls() {
@@ -199,6 +203,22 @@ public final class AppTest {
 
         int postQueryStatus = response.getStatus();
         assertThat(postQueryStatus).isEqualTo(HttpServletResponse.SC_NOT_FOUND);
+
+        response = Unirest.get(baseUrl + "/urls").asString();
+        assertThat(response.getBody()).doesNotContain(WRONG_URL);
+    }
+
+    @Test
+    public void testCreateWrongUrl() {
+        HttpResponse<String> response = Unirest.post(baseUrl + "/urls")
+                .field("url", WRONG_URL)
+                .asString();
+
+        int postQueryStatus = response.getStatus();
+        assertThat(postQueryStatus).isEqualTo(HttpServletResponse.SC_FOUND);
+
+        response = Unirest.get(baseUrl).asString();
+        assertThat(response.getBody()).contains("Некорректный URL");
 
         response = Unirest.get(baseUrl + "/urls").asString();
         assertThat(response.getBody()).doesNotContain(WRONG_URL);

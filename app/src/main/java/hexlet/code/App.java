@@ -11,9 +11,11 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.extras.java8time.dialect.Java8TimeDialect;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.sql.SQLException;
 import java.util.stream.Collectors;
 
@@ -75,12 +77,7 @@ public class App {
 
         var url = App.class.getClassLoader().getResource("schema.sql");
 
-        // var dataSource = new HikariDataSource(hikariConfig);
         String sql = getContentFromStream(getFileFromResourceAsStream("schema.sql"));
-
-        // var file = new File(url.getFile());
-        // var sql = Files.lines(file.toPath())
-        //      .collect(Collectors.joining("\n"));
 
 
         try (var connection = dataSource.getConnection();
@@ -102,10 +99,6 @@ public class App {
         return app;
 
     }
-
-
-    //export JDBC_DATABASE_URL=jdbc:postgresql://db:5432/postgres?password=password&user=postgres
-    //export JDBC_DATABASE_URL=jdbc:postgresql://dpg-ckdscldjhfbs73fqrc6g-a.oregon-postgres.render.com:5432/dbpostgres_z47u?password=yQss7SXC5x8lngqv932PN4Mj3iJrhHJI&user=dbpostgres_z47u_user
 
     private static String getDatabaseUrl() {
         return System.getenv()

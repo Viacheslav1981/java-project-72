@@ -88,6 +88,8 @@ public class App {
 
     }
 
+    //export JDBC_DATABASE_URL=jdbc:postgresql://db:5432/postgres?password=password&user=postgres
+
     private static String getDatabaseUrl() {
         return System.getenv()
                 .getOrDefault("JDBC_DATABASE_URL", "jdbc:h2:mem:project");

@@ -117,9 +117,9 @@ public final class AppTest {
 
         var actualUrl = UrlRepository.findByName(CORRECT_URL);
         assertThat(actualUrl).isNotNull();
+        assertThat(actualUrl.get().getName()).isEqualTo(CORRECT_URL);
 
     }
-
 
     @Test
     public void testShowUrls() {

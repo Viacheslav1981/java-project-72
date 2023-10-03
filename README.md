@@ -7,12 +7,11 @@
 
 ### CodeClimate test coverage based on Jacoco:
 [![Test Coverage](https://api.codeclimate.com/v1/badges/fd167ffece0f420bea54/test_coverage)](https://codeclimate.com/github/Viacheslav1981/java-project-72/test_coverage)
-https://pageanalizer.onrender.com/
 
-###Link
-[![Render.com](https://render.com/images/render-banner.png)](https://page-analyzer-d30f.onrender.com)
+Link
+[!([https://page-analyzer-d30f.onrender.com](https://page-analyzer-d30f.onrender.com))
 
-###Описание
+Описание:
 Учебный проект по изучению того, как создать приложение Java MVC и как использовать фреймворк Javalin, Thymeleaf и другие технологии для этой цели.
 
 Приложение предоставляет сервис, который может собирать и анализировать URL-адреса для их SEO, а также хранить результаты этого анализа, используя базу данных PostgreSQL.
@@ -22,3 +21,18 @@ https://pageanalizer.onrender.com/
 1) Их доступность (приложение проверяет код состояния ответа сервера URL-адреса);
 
 2) Содержимое тегов заголовка, h1 и описания главной страницы URL-адреса.
+
+Технологии:
+* Javalin
+* Thymeleaf
+* Bootstrap
+* H2
+* PostgreSQL
+* JUnit
+* MockWebServer
+* Render (for deploy)
+* Lombok
+
+Требования:
+* JDK 20
+* Gradle 8.2

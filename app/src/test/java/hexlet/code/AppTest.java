@@ -208,20 +208,5 @@ public final class AppTest {
         assertThat(response.getBody()).doesNotContain(WRONG_URL);
     }
 
-    @Test
-    public void testCreateWrongUrl() {
-        HttpResponse<String> response = Unirest.post(baseUrl + "/urls")
-                .field("url", WRONG_URL)
-                .asString();
-
-        int postQueryStatus = response.getStatus();
-        assertThat(postQueryStatus).isEqualTo(HttpServletResponse.SC_FOUND);
-
-        response = Unirest.get(baseUrl).asString();
-        assertThat(response.getBody()).contains("Некорректный URL");
-
-        response = Unirest.get(baseUrl + "/urls").asString();
-        assertThat(response.getBody()).doesNotContain(WRONG_URL);
-    }
 
 }

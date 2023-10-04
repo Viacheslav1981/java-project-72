@@ -8,7 +8,7 @@
 [![Test Coverage](https://api.codeclimate.com/v1/badges/fd167ffece0f420bea54/test_coverage)](https://codeclimate.com/github/Viacheslav1981/java-project-72/test_coverage)
 
 Link
-https://page-analyzer-d30f.onrender.com](https://page-analyzer-d30f.onrender.com
+https://page-analyzer-d30f.onrender.com
 
 Описание:
 Учебный проект по изучению того, как создать приложение Java MVC и как использовать фреймворк Javalin, Thymeleaf и другие технологии для этой цели.
